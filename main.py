@@ -5,6 +5,7 @@ now = datetime.datetime.now()
 date_time = now.strftime("%d.%m.%Y_%H.%M.%S")
 date_dir = now.strftime("%d_%m_%Y")
 print("Hello")
+print("Hello")
 hoa_don = {'soHoaDon':'',
         'ngayHoaDon':'',
         'tenKhachHang':'',

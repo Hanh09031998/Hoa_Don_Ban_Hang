@@ -7,7 +7,6 @@ import json
 import base
 
 
-
 class user():
     id = None
     status = None
