@@ -4,8 +4,8 @@ import hashlib
 import shutil
 import sys
 import json
-import base
-
+import os
+import basic
 
 class user():
     id = None
@@ -13,28 +13,25 @@ class user():
     email = None
     account_name = None
     create_date = None
-    def __init__(self,id,status,account_name,create_date):
+    def __init__(self,id,account_name):
         self.id = id
-        self.status = status
         self.account_name = account_name
         now = datetime.datetime.now()
         self.create_date = now.strftime("%d/%m/%Y, %H:%M:%S")
-        str_to_save = str(self.id) + "#" + str(self.status) + "#" + str(self.account_name) + "#" + str(self.create_date) + '\n'
-        print(str_to_save)
-
-    def tao_NhanVien(self,email,password):
+        
+    def tao_NhanVien(self,status,email,password):
         self.password = password
         self.email = email
         str_to_save = str(self.id) + "#" + str(self.status) + "#" + str(self.email) + "#" + str(self.password) + "#" + str(self.account_name) + "#" + str(self.create_date) + '\n'
         print(str_to_save)
-        with open('../Data/nhanvien.csv', 'a') as f:
+        with open('Data/nhanvien.csv', 'a') as f:
             str_to_save = f.write(str_to_save)
 
     def tao_KhachHang(self,phone):
         self.phone = phone
-        str_to_save = str(self.id) + "#" + str(self.status) + "#" + str(self.phone) + "#" + str(self.account_name) + "#" + str(self.create_date) + '\n'
+        str_to_save = str(self.id) + "#" + str(self.phone) + "#" + str(self.account_name) + "#" + str(self.create_date) + '\n'
         print(str_to_save)
-        with open('../Data/khachhang.csv', 'a') as f:
+        with open('Data/khachhang.csv', 'a') as f:
             str_to_save = f.write(str_to_save) 
 
 
@@ -42,7 +39,7 @@ class user():
 
 nhanVien_List = []
 def load_NhanVien():
-    with open('../Data/tao_NhanVien.csv', 'r') as f:
+    with open('Data/tao_NhanVien.csv', 'r') as f:
         line = f.readline()
         while line:
             str_to_reads = line.split("#")
@@ -53,12 +50,12 @@ def load_NhanVien():
                 list_NhanVien["password"] = str_to_reads[3]
                 nhanVien_List.append(list_NhanVien)
             line = f.readline()
-    return  list_NhanVien
+    return  nhanVien_List
 
 
 khachHang_List = []
 def load_KhachHang():
-    with open('../Data/tao_KhachHang.csv', 'r') as f:
+    with open('Data/tao_KhachHang.csv', 'r') as f:
         line = f.readline()
         while line:
             str_to_reads = line.split("#")
@@ -74,7 +71,7 @@ def load_KhachHang():
 
 def read_NhanVien():
     read_NhanVien =[]
-    with open('../Data/tao_NhanVien.csv', 'r') as f:
+    with open('Data/tao_NhanVien.csv', 'r') as f:
         line = f.readline()
         while line:
             str_to_reads = line.split("#")
@@ -93,12 +90,16 @@ def read_NhanVien():
                     list_NhanVien["create_date"] = list_NhanVien["create_date"][0:len(list_NhanVien["create_date"])-1]
                 read_NhanVien.append(list_NhanVien)
             line = f.readline()
-    print("__________________________________________DANH SACH SELLER_____________________________________________")
+    print("__________________________________________DANH SACH NHAN VIEN__________________________________________")
     print("+-------+---------------+-------------------------+-------------------------+-------------------------+")
     print("|  STT  |     Status    |        Email            |          Name           |        Create Date      |")
     print("+-------+---------------+-------------------------+-------------------------+-------------------------+")
     for lines in read_NhanVien:
-        print("|",lines["id"].center(5),"|",lines["status"].ljust(13),"|",lines["email"].ljust(23),"|",lines["account_name"].ljust(23),"|",lines["create_date"].center(23),"|")
+        print("|",lines["id"].center(5),"|",
+        lines["status"].ljust(13),"|",
+        lines["email"].ljust(23),"|",
+        lines["account_name"].ljust(23),"|",
+        lines["create_date"].center(23),"|")
     print("+-------+---------------+-------------------------+-------------------------+-------------------------+")
 
 
@@ -107,7 +108,7 @@ def read_NhanVien():
 
 def read_KhachHang():
     read_KhachHang =[]
-    with open('../Data/tao_KhachHang.csv', 'r') as f:
+    with open('Data/tao_KhachHang.csv', 'r') as f:
         line = f.readline()
         while line:
             str_to_reads = line.split("#")
@@ -122,12 +123,15 @@ def read_KhachHang():
                 read_KhachHang.append(list_KhachHang)
             line = f.readline()
 
-    print("______________________________DANH SACH BUYLER______________________________")
+    print("______________________________DANH SACH KHACH HANG___________________________")
     print("+-------+---------------+-------------------------+-------------------------+")
     print("|  STT  |     Phone     |        Email            |        Create Date      |")
     print("+-------+---------------+-------------------------+-------------------------+")
     for lines in read_KhachHang:
-        print("|",lines["id"].center(5),"|",lines["phone"].ljust(13),"|",lines["account_name"].ljust(23),"|",lines["create_date"].center(23),"|")
+        print("|",lines["id"].center(5),"|",
+        lines["phone"].ljust(13),"|",
+        lines["account_name"].ljust(23),"|",
+        lines["create_date"].center(23),"|")
     print("+-------+---------------+-------------------------+-------------------------+")
 
 
@@ -137,53 +141,53 @@ def read_KhachHang():
 
 def new_NhanVien():
     load_NhanVien()
-    email = input("email cua ban la gi: ")
+    email = input("Nhap email cua ban: ")
     count = 0
     for nhanVien in nhanVien_List:
         if email.upper() == nhanVien["email"].upper():
             count += 1
     if count > 0:
-        print("Login name already exist!", email)
+        print("Ten dang nhap da ton tai!", email)
     else:
-        id_list = base.get_id('../Data/tao_NhanVien.csv')
+        id_list = basic.get_id('Data/tao_NhanVien.csv')
 
         idNew = int(id_list["id"]) + 1
 
-        account_name = input("Ten cua ban la gi?: ")
-        password_text = input("Mat khau cua ban la gi?: ")
+        account_name = input("Nhap tai khoan nhan vien: ")
+        password_text = input("Nhap mat khau: ")
         password_encode = hashlib.md5(password_text.encode()).hexdigest()
         print(password_encode)
         print(idNew,1,email,password_encode,account_name,'')
-        sellerAcc = user(idNew,'1',account_name,'')
-        sellerAcc.create_seller(email,password_encode)
+        sellerAcc = user(idNew,account_name)
+        sellerAcc.tao_NhanVien(1,email,password_encode)
     
 
 
-def new_KhachHang():
+def new_KhachHang(msisdn):
     load_KhachHang()
-    phone = input("So dien thoai cua ban la gi: ")
+    phone = input("Nhap so dien thoai cua ban: ")
     count = 0
     for khachHang in khachHang_List:
         if phone == khachHang["phone"]:
             count += 1
     if count > 0:
-        print("Login name already exist!", phone)
+        print("Ten dang nhap da ton tai!!!", phone)
     else:
-        id_list = base.get_id('../Data/buyer_user.csv')
+        id_list = basic.get_id('Data/tao_KhachHang.csv')
         print(id_list["id"])
         idNew = int(id_list["id"]) + 1
-        account_name = input("Ten cua ban la gi?: ")
+        account_name = input("Nhap tai khoan cua ban: ")
         print(idNew,1,account_name,'')
-        sellerAcc = user(idNew,account_name,'')
-        sellerAcc.create_buyer(phone)
+        sellerAcc = user(idNew,account_name)
+        sellerAcc.tao_KhachHang(phone)
 
 
 
-def deactiveUserSeller():
-    shutil.copy('../Data/tao_NhanVien.csv', '../Data/NhanVien_bak.csv')
-    email = input("account bạn muon xoa la gi: ")
-    with open('../Data/NhanVien_bak.csv', 'r') as f:
-        with open('../Data/tao_NhanVien.csv', 'w') as wfile:
+def xoa_NhanVien():
+    shutil.copy('Data/tao_NhanVien.csv', 'Data/NhanVien_back.csv')
+    email = input("Nhap tai khoan nhan vien ma ban muon xoa: ")
+    with open('Data/NhanVien_back.csv', 'r') as f:
+        with open('Data/tao_NhanVien.csv', 'w') as wfile:
             line = f.readline()
             while line:
                 str_to_reads = line.split("#")
@@ -199,10 +203,10 @@ def deactiveUserSeller():
 
 
 def update_NhanVien():
-    shutil.copy('../Data/tao_NhanVien.csv', '../Data/NhanVien_bak.csv')
-    email = input("account bạn muon update: ")
-    with open('../Data/NhanVien_bak.csv', 'r') as f:
-        with open('../Data/tao_NhanVien.csv', 'w') as wfile:
+    shutil.copy('Data/tao_NhanVien.csv', 'Data/NhanVien_back.csv')
+    email = input("Nhap tai khoan muon update: ")
+    with open('Data/NhanVien_back.csv', 'r') as f:
+        with open('Data/tao_NhanVien.csv', 'w') as wfile:
             line = f.readline()
             while line:
                 str_to_reads = line.split("#")
